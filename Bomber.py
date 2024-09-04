@@ -5,12 +5,11 @@
 
 # ======== # Import part # ======== #  
 from os import name
-from os import path as os_path
-from sys import path as sys_path
 from shutil import move
 from lib import IranianSMS
 from colorama import Fore
 from subprocess import run
+from pathlib import Path
 try:
     import pyfiglet
     from requests import get, Response, exceptions
@@ -21,18 +20,22 @@ except ImportError:
     print('Some required module are missing.\nPlease run "path pip install -r requirements.txt" command on your terminal.')
 
 
-# ======== # Download required font for figlet # ======== #
-pyfiglet_path: str = pyfiglet.__file__.replace('__init__.py', 'fonts')
+pyfiglet_font_path: Path = Path(pyfiglet.__file__).parent.resolve() / 'fonts'
+current_directory: Path = Path(__file__).parent.resolve()
 
-if (not os_path.exists(os_path.join(pyfiglet_path + 'ANSI Shadow.flf'))):
+# ======== # Download required font for figlet # ======== #
+if (not (pyfiglet_font_path / 'ANSI Shadow.flf').exists()):
+    # ======== # Moving the font that was with script to pyfiglet library font directory # ======== #
     try:
-        move(os_path.join(sys_path[0], 'ANSI Shadow.flf'), os_path.join(pyfiglet_path, 'ANSI Shadow.flf'))
+        move(font_path :=(current_directory / 'ANSI Shadow.flf'), (pyfiglet_font_path / 'ANSI Shadow.flf'))
     except FileNotFoundError:
-        print(Fore.RED + os_path.join(sys_path[0], 'ANSI Shadow.flf') + ' Was Not Found!\n' + Fore.RESET)
+        print(Fore.RED + str(font_path) + ' Was Not Found!\n' + Fore.RESET)
         print(Fore.YELLOW + 'Downloading the required font!' + Fore.RESET)
+        
+    # ======== # Download the font from github # ======== #
         try:
             fontFile: Response = get("https://github.com/xero/figlet-fonts/raw/master/ANSI%20Shadow.flf", allow_redirects=True)
-            open(os_path.join(pyfiglet_path + 'ANSI Shadow.flf'), 'wb').write(fontFile.content)
+            (pyfiglet_font_path / 'ANSI Shadow.flf').write_bytes(fontFile.content)
         except (exceptions.Timeout, exceptions.ReadTimeout):
             exit(Fore.RED + "Couldn't connect to server.\nCheck your internet connection and try again" + Fore.RESET)
 
@@ -56,9 +59,10 @@ else:
     print(Fore.BLUE + 'STARTING THE OPERATION ...' + Fore.RESET)
     target_Phone_Number = '0' + target_Phone_Number.split('98')[1]
 
-# ========= # start to send code # ========= #
+# ========= # start to send sms # ========= #
 iranianSender = IranianSMS(target_Phone_Number)
 iranianSender.AllAtOnce()
+
 try:
     from lib import IranianWebSMS
     web_irainan_sender = IranianWebSMS(target_Phone_Number)
