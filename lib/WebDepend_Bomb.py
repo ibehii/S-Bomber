@@ -179,8 +179,7 @@ class IranianWebSMS:
             return False
         else:
             return True
-
-            
+        
         
     def nobat(self) -> bool:
         URL: str = r"https://user.nobat.ir/login"
@@ -251,6 +250,22 @@ class IranianWebSMS:
                 self.driver.switch_to.new_window("tab")
                 self.driver.get('https://www.filimo.com/signup/code')
                 
+        except:
+            return False
+        else:
+            return True 
+        
+    def pooleno(self) -> bool:
+        URL: str = r"https://pooleno.ir/"
+        self.driver.get(URL)
+        self.driver.maximize_window()
+        
+        try:    
+            inputBox = WebDriverWait(self.driver, 15).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'form.flex:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > input:nth-child(1)')))
+            inputBox.send_keys(self.PhoneNumber)
+            inputBox.send_keys(Keys.ENTER)
+            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, r'button.text-\[12px\]:nth-child(1)'))).click()
+            
         except:
             return False
         else:
