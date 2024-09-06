@@ -17,6 +17,7 @@ class IranianSMS:
         self.PhoneNumber: str = PhoneNumber
         
     def divar(self)  -> Literal[True]:
+        '''Sends SMS using divar.ir verification api'''
         divar_URL: str = r"https://api.divar.ir/v5/auth/authenticate"
         
         try:
@@ -32,6 +33,7 @@ class IranianSMS:
             return True
         
     def tapsi_passenger(self) -> Literal[True]:
+        '''Sends SMS using tapsi.ir verification api'''
         tapsi_passenger_login_URL: str = r"https://accounts-api.tapsi.ir/api/v1/sso-user/auth"
         cookies = {'__arcsco': '6bb021ad4353286b466629402d8c68a0',}
         json_data = {
@@ -51,6 +53,7 @@ class IranianSMS:
             return True
     
     def tapsi_biker(self) -> Literal[True]:
+        '''Sends SMS using tapsi.ir verification api'''
         tapsi_biker_URL: str = r"https://tap33.me/api/v2/user"
         
         try:
@@ -66,6 +69,7 @@ class IranianSMS:
             return True
     
     def tapsi_driver(self) -> Literal[True]:
+        '''Sends SMS using tapsi.ir verification api'''
         tapsi_driver_URL = r"https://api.tapsi.ir/api/v2.2/user"
 
         try:
@@ -81,6 +85,7 @@ class IranianSMS:
             return True
         
     def trob(self) -> Literal[True]:
+        '''Sends SMS using torob.com verification api'''
         trob_URL: str = f"https://api.torob.com/v4/user/phone/send-pin/?phone_number={self.PhoneNumber}"
         
         try:
@@ -96,6 +101,7 @@ class IranianSMS:
             return True
         
     def sheypoor (self) -> Literal[True]:
+        '''Sends SMS using sheypoor.com verification api'''
         sheypoor_URL: str = r"https://www.sheypoor.com/api/v10.0.0/auth/send"
         
         try:
@@ -111,6 +117,7 @@ class IranianSMS:
             return True
     
     def sheypoor_app_link(self) -> Literal[True]:
+        '''Sends SMS using sheypoor.com verification api'''
         sheypoor_app_link_URL: str = r"https://www.sheypoor.com/api/web/download/send-notification"
 
         try:
@@ -126,6 +133,7 @@ class IranianSMS:
             return True
     
     def okcs(self) -> Literal[True]:
+        '''Sends SMS using okcs.com verification api'''
         okcs_URL: str = r"https://okcs.com/users/mobilelogin"
         
         try:
@@ -141,6 +149,7 @@ class IranianSMS:
             return True
         
     def alibaba(self) -> Literal[True]:
+        '''Sends SMS using alibaba.ir verification api'''
         alibaba_URL: str = r"https://ws.alibaba.ir/api/v3/account/mobile/otp"
         
         try:
@@ -156,6 +165,7 @@ class IranianSMS:
             return True
         
     def oketab(self) -> Literal[True]:
+        '''Sends SMS using oketab.com verification api'''
         oketab_URL: str = f"https://www.oketab.com/index.php?login&rotp=true&mb={self.PhoneNumber}"
         
         try:
@@ -171,6 +181,7 @@ class IranianSMS:
             return True
         
     def GapFilm(self) -> Literal[True]:
+        '''Sends SMS using Gapfilm.ir verification api'''
         GapFilm_URL: str = r"https://core.gapfilm.ir/api/v3.1/Account/Login"
 
         try:
@@ -186,17 +197,21 @@ class IranianSMS:
             return True
         
     def FilmNet(self) -> Literal[True]:
+        '''Sends SMS using filmnet.ir verification api'''
         FilmNet_URL: str = f"https://tv.filmnet.ir/api-v2/access-token/users/{self.PhoneNumber}/otp"
         try:
-            result: Response = get(FilmNet_URL, headers=Headers.filmnet_header)
-            if(result.status_code > 300):
-                raise ConnectionError       
-        except:
-            return False
+            result: Response = get(FilmNet_URL, headers=Headers.filmnet_header)      
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
     def DrDr(self) -> Literal[True]:
+        '''Sends SMS using drdr.ir verification api'''
         DrDr_URL: str = r"https://drdr.ir/api/v3/auth/login/mobile/init"
         
         try:
@@ -212,6 +227,7 @@ class IranianSMS:
             return True
         
     def itoll_app_link(self) -> Literal[True]:
+        '''Sends SMS using itoll.com verification api'''
         itoll_app_link_URL: str = r"https://app.itoll.com/api/v1/send-application-link"
         
         try:
@@ -227,6 +243,7 @@ class IranianSMS:
             return True
         
     def anar360(self) -> Literal[True]:
+        '''Sends SMS using anar360.com verification api'''
         anar360_URL: str = r"https://anar360.com/api/_/auth/check"
         
         try:
@@ -242,6 +259,7 @@ class IranianSMS:
             return True
         
     def azki(self) -> Literal[True]:
+        '''Sends SMS using azki.com verification api'''
         azki_URL: str = r"https://www.azki.com/api/vehicleorder/v2/app/auth/check-login-availability/"
         
         try:
@@ -257,7 +275,8 @@ class IranianSMS:
             return True
         
     def Nashr_olgoo(self) -> Literal[True]:
-        Nashr_olgoo_URL: str = f"https://www.olgoobooks.ir/signupStudents/"
+        '''Sends SMS using olgoobooks.ir verification api'''
+        Nashr_olgoo_URL: str = "https://www.olgoobooks.ir/signupStudents/"
 
         data = {
     'contactInfo[mobile]': self.PhoneNumber,
@@ -283,6 +302,7 @@ class IranianSMS:
             return True
     
     def banimode(self) -> Literal[True]:
+        '''Sends SMS using banimode.com verification api'''
         banimode_URL: str = r"https://mobapi.banimode.com/api/v2/auth/request"
         
         try:
@@ -298,6 +318,7 @@ class IranianSMS:
             return True
     
     def lendo(self) -> Literal[True]:
+        '''Sends SMS using lendoco.ir verification api'''
         lendo_URL: str = r"https://api.lendoco.ir/api/customer/auth/send-otp"
         
         try:
@@ -313,6 +334,7 @@ class IranianSMS:
             return True
 
     def basalam(self) -> Literal[True]:
+        '''Sends SMS using basalam.com verification api'''
         basalam_URL: str = r"https://auth.basalam.com/otp-request"
         
         try:
@@ -328,6 +350,7 @@ class IranianSMS:
             return True
         
     def drsaina(self) -> Literal[True]:
+        '''Sends SMS using drsaina.com verification api'''
         basalam_URL: str = f"https://www.drsaina.com/api/v1/authentication/user-exist?PhoneNumber={self.PhoneNumber}"
         
         try:
@@ -343,6 +366,7 @@ class IranianSMS:
             return True
     
     def see5(self) -> Literal[True]:
+        '''Sends SMS using see5.net verification api'''
         see5_URL: str = r"https://crm.see5.net/api_ajax/sendotp.php"
         
         try:
@@ -359,6 +383,7 @@ class IranianSMS:
             return True
 
     def bimito(self) -> Literal[True]:
+        '''Sends SMS using bimito.com verification api'''
         bimito_URL: str = r"https://bimito.com/api/vehicleorder/v2/app/auth/check-login-availability/"
         
         try:
@@ -374,6 +399,7 @@ class IranianSMS:
             return True
     
     def sibirani(self) -> Literal[True]:
+        '''Sends SMS using sibirani.com verification api'''
         sibirani_URL: str = r"https://sandbox.sibirani.com/api/v1/user/invite"
         
         try:
@@ -389,6 +415,7 @@ class IranianSMS:
             return True
     
     def hamrah_mechanic(self) -> Literal[True]:
+        '''Sends SMS using hamrah-mechanic.com verification api'''
         hamrah_mechanic_URL: str = r"https://www.hamrah-mechanic.com/api/v1/membership/otp"
         
         try:
@@ -404,6 +431,7 @@ class IranianSMS:
             return True 
 
     def varzesh3(self) -> Literal[True]:
+        '''Sends SMS using varzesh3.com verification api'''
         varzesh3_URL: str = r"https://sso.varzesh3.com/account/login"
         
         params = {
@@ -432,6 +460,7 @@ class IranianSMS:
             return True 
         
     def digikala(self) -> Literal[True]:
+        '''Sends SMS using digikala.com verification api'''
         digikala_URL: str = r"https://api.digikala.com/v1/user/authenticate/"
         cookies = {
     '_sp_id.13cb': 'ea35d45f-b735-43cb-86fb-a3e9725a68af.1720376938.1.1720377053..be86ef53-bc7b-48f7-a4d5-f7bc412ec0ac..a985481f-0e48-4c12-bebc-3a893a830130.1720376937683.15',
@@ -459,6 +488,7 @@ class IranianSMS:
     
     
     def telewebion(self) -> Literal[True]:
+        '''Sends SMS using telewebion.com verification api'''
         telewebion_URL: str = r"https://gateway.telewebion.com/shenaseh/api/v2/auth/step-one"
         
         json_data = {
@@ -479,6 +509,7 @@ class IranianSMS:
             return True
         
     def pindo(self) -> Literal[True]:
+        '''Sends SMS using lendoco.ir verification api'''
         pindo_URL: str = r"https://api.pindo.ir/v1/user/login-register/"
         
         try:
@@ -494,6 +525,7 @@ class IranianSMS:
             return True  
     
     def threetex(self) -> Literal[True]:
+        '''Sends SMS using 3tex.io verification api'''
         threetex_url: str = r"https://3tex.io/api/1/users/validation/mobile"
 
         try:
