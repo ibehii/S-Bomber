@@ -10,6 +10,7 @@ _**⚠️ Important Notice: This program is intended for educational purposes on
 ### Contents :
 - [Installation 📥](#installation-)
 - [Usage 📖](#usage-)
+- [Browser Depended SMS 🌐](#browser-depended-sms-)
 ---
 # Installation 📥
 1. Make sure you have **python** installed.
@@ -30,3 +31,17 @@ _**⚠️ Important Notice: This program is intended for educational purposes on
     > python Bomber.py
 
 # Usage 📖
+At this stage simply enter a number and the program starts it's magic 😉\
+At this rate we only accept **Iranian** number. Follow for more update
+
+# Browser Depended SMS 🌐
+Some services had some restriction and couldn't mimic a valid behavior for them.\
+Program will open a headless **FireFox** browser, but this action need some requirement.
+1. **FireFox** browser must be installed in your device.
+    * You can simply download firefox from [their website](https://www.mozilla.org/en-US/firefox/download/thanks/)
+2. Firefox **WebDriver** must be present on: `S-Bomber/lib/SeleniumFireFoxWebDriver`
+   * Download the last version from [github](https://github.com/mozilla/geckodriver/releases)
+
+
+---
+Having trouble? Make issue or send me message on [telegram](https://t.me/BZHNAM)
