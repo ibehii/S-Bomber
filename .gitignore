@@ -1,3 +1,4 @@
 no
 .venv
 lib/__pycache__
+tester.py
