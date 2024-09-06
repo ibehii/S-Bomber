@@ -765,3 +765,22 @@ pindo_header = {
     # Requests doesn't support trailers
     # 'TE': 'trailers',
 }
+
+classino_header = {"Host": "student.classino.com",
+"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:129.0) Gecko/20100101 Firefox/129.0",
+"Accept": "application/json",
+"Accept-Encoding": "gzip, deflate, br, zstd",
+"Content-Type": "application/json",
+"Authorization": "Bearer null",
+"Content-Length": "24",
+"Connection": "keep-alive",}
+
+goftino_header = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:129.0) Gecko/20100101 Firefox/129.0',
+    'Accept': '*/*',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'X-Requested-With': 'XMLHttpRequest',
+    'Origin': 'https://my.goftino.com',
+    'Connection': 'keep-alive',
+    'Referer': 'https://my.goftino.com/app/profile',
+}
