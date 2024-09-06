@@ -5,7 +5,6 @@
 
 # ======== # Import part # ======== # 
 try:
-    from time import sleep
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.wait import WebDriverWait
@@ -13,9 +12,7 @@ try:
     from selenium.webdriver.firefox.options import Options
     from selenium.webdriver.firefox.service import Service
     from selenium.webdriver.common.keys import Keys
-    from os.path import join
-    from sys import path as sys_path
-    from colorama import Fore
+    from pathlib import Path
 except ImportError:
     exit('Some required module are missing.\nPlease run "path pip install -r requirements.txt" command on your terminal.')
 
@@ -26,13 +23,16 @@ class IranianWebSMS:
     "PhoneNumber": Target phone number.
     "driver": webdriver path on your system
     '''
-    def __init__(self, PhoneNumber: str, driver = join(sys_path[0], 'lib' ,"SeleniumFireFoxWebDriver", 'geckodriver')) -> None:
+    current_path: Path = Path(__file__).parent.resolve()
+    def __init__(self, PhoneNumber: str, driver: Path = (current_path / "SeleniumFireFoxWebDriver" / 'geckodriver')) -> None:
         self.PhoneNumber: str = PhoneNumber
         options = Options()
         options.add_argument("--headless")
-        self.driver = webdriver.Firefox(service=Service(executable_path=driver), options=options)
+        self.driver = webdriver.Firefox(service=Service(executable_path= str(driver)), options=options)
         self.driver.implicitly_wait(7)
 
+    def __exit__(self) -> None:
+        self.driver.quit()
         
     def snapp_app_link(self) -> bool:
         URL: str = r"https://snapp.ir/"
@@ -255,77 +255,3 @@ class IranianWebSMS:
             return False
         else:
             return True 
-
-            
-    
-    def AllAtOnce(self):
-        if (self.snapp_market() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through snapp market Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through snapp market!' + Fore.RESET)        
-        sleep(2.666)
-        
-        if (self.itoll() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through itoll Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through itoll!' + Fore.RESET)        
-        sleep(2.666)
-        
-        if (self.snapp_trip() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through snapp trip Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through snapp trip!' + Fore.RESET)        
-        sleep(2.666)
-        
-        if (self.buskool() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through buskool Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through buskool!' + Fore.RESET)   
-        sleep(2.666)
-        
-        if (self.snapp_food() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through snapp food Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through snapp food!' + Fore.RESET)        
-        sleep(2.666)
-        
-        if (self.nobat() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through nobat Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through nobat!' + Fore.RESET)
-        sleep(2.666)
-        
-        if (self.snapp_worker_login_page() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through "snapp for driver" Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through "snapp for driver"!' + Fore.RESET)        
-        sleep(2.666) 
-        
-        if (self.mihanpezeshk_patients() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through mihanpezeshk for patients Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through "mihanpezeshk for patients"!' + Fore.RESET)
-        sleep(2.666)
-        
-        if (self.snapp_login_page() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through snapp Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through snapp!' + Fore.RESET)        
-        sleep(2.666)
-        
-        if (self.mihanpezeshk_doctor() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Verification code sent through "mihanpezeshk for doctor" Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send Verification code through "mihanpezeshk for doctor"!' + Fore.RESET)
-        sleep(2.666)
-     
-
-        if (self.snapp_app_link() == True):
-            print(Fore.YELLOW + '[+]' + Fore.MAGENTA + ' - ' + Fore.GREEN  + 'Download link sent through snapp Successfully' + Fore.RESET)
-        else:
-            print(Fore.RED + '[-] - '  + 'Couldn\'t send download link through snapp!' + Fore.RESET)        
-        sleep(2.666)
-        
-        self.driver.quit()
-        
-         
