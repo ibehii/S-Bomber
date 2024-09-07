@@ -46,7 +46,7 @@ _clear_screen()
 
 # ======== # startup Menu # ======== #
 print(standard_fg(pyfiglet.figlet_format('S-Bomber' ,font='ANSI Shadow')),
-Fore.MAGENTA + '- My telegram : t.me/BZHNAM -\n' + '- My github : https://github.com/ibehii -\n\n' + Fore.YELLOW + '------------ # v1.0.0 # ------------  \n' + Fore.RESET)
+Fore.MAGENTA + '- My telegram : t.me/BZHNAM -\n' + '- My github : https://github.com/ibehii -\n\n' + Fore.YELLOW + '------------ # v1.1.0 # ------------  \n' + Fore.RESET)
 target_Phone_Number: str = input(Fore.GREEN + '- Enter your target phone number (e.g: 989126543210)-> ' + Fore.RESET).replace('+', '')
 
 if(not target_Phone_Number.isnumeric()):
