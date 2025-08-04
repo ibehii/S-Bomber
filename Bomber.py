@@ -11,9 +11,10 @@ from lib import IranianSMS, bomb_exceptions
 from colorama import Fore
 from subprocess import run
 from pathlib import Path
+from platform import system, machine
 try:
     import pyfiglet
-    from requests import get, Response, exceptions
+    from requests import get, Response, exceptions, HTTPError
     from Rcolor import standard_fg 
     from colorama import Fore
     from selenium.common.exceptions import WebDriverException
@@ -90,4 +91,25 @@ except ImportError:
     print(Fore.RED + 'A file ("WebDepend_Bomb.py") is missing. Couldn\'t send 11 message. Check github.com/ibehii/S-Bomber')
     
 except WebDriverException:
-    print(Fore.RED + 'FireFox is not installed or webdriver is missing. Couldn\'t send 11 message. Check github.com/ibehii/S-Bomber')
+    print(Fore.RED + 'Browser webdriver is missing. Couldn\'t send 11 message.\nMove the webdriver in the same path of this file'+ Fore.RESET)
+    download_permission:str = input(Fore.GREEN + 'Would you like to install it? [Y/n] ' + Fore.RESET)
+    if download_permission.lower() in ["y", "yes", ""]:
+        download_link: dict = {'Linux-x86_64': "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz",
+                               'Linux-aarch64':'https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux-aarch64.tar.gz',
+                               'Mac-x86_64': 'https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-macos.tar.gz',
+                               'Mac-arm64':'https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-macos-aarch64.tar.gz',
+                               'Windows_x64':'https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-win32.zip',
+                               'Windows_ARM64':'https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-win-aarch64.zip'
+                               }
+        system_name: str = ''.join(list(filter(lambda system_name: system() in system_name and machine() in system_name, download_link)))
+        
+        try:
+            geckodriver_file: Response = get(download_link[system_name])
+            geckodriver_file.raise_for_status()
+            geckodriver_file.iter_content()
+            with open(current_directory / 'geckodriverCompress', 'wb') as geckodriver:
+                geckodriver.write(geckodriver_file.content)
+        except HTTPError:
+            exit(Fore.RED + 'Unable to stablish a connection to github.com' + Fore.RESET)
+        else:
+            print(Fore.GREEN + "Downloaded successfully please extract the file and rerun the program" + Fore.RESET)

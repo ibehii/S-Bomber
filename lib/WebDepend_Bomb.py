@@ -24,7 +24,7 @@ class IranianWebSMS:
     "driver": webdriver path on your system
     '''
     current_path: Path = Path(__file__).parent.resolve()
-    def __init__(self, PhoneNumber: str, driver: Path = (current_path / "SeleniumFireFoxWebDriver" / 'geckodriver')) -> None:
+    def __init__(self, PhoneNumber: str, driver: Path = (current_path.parent.resolve() / 'geckodriver')) -> None:
         self.PhoneNumber: str = PhoneNumber
         options = Options()
         options.add_argument("--headless")
