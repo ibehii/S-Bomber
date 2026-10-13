@@ -1,4 +1,13 @@
 no
 .venv
 lib/__pycache__
+__pycache__/
+*.pyc
 tester.py
+geckodriver
+geckodriverCompress
+*.tar.gz
+*.zip
+.pytest_cache/
+.coverage
+htmlcov/
