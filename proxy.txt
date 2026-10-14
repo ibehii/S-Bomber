@@ -1,0 +1,7 @@
+# S-Bomber Proxy List
+# Add one proxy per line in any of the following formats:
+# 127.0.0.1:8080
+# http://username:password@ip:port
+# socks5://127.0.0.1:1080
+#
+# Proxies will be tested asynchronously and rotated during dispatching.

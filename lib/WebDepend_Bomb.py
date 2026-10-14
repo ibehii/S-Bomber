@@ -1,20 +1,22 @@
 # Github: https://github.com/ibehii
-# Telegram: https://T.me/BZHNAM
+# Telegram: https://t.me/dr_xz
 # e-mail: Behii@tutanota.com
 # ____________________________________________
 
-"""Browser-automated SMS dispatching using Selenium and headless Firefox."""
+"""Browser-automated SMS dispatching using Selenium with Chrome and Firefox engines."""
 
 from pathlib import Path
 import shutil
 from types import TracebackType
-from typing import Any
+from typing import Any, Optional
 
 try:
     from selenium import webdriver
     from selenium.common.exceptions import TimeoutException, WebDriverException
     from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.chrome.service import Service as ChromeService
     from selenium.webdriver.firefox.options import Options as FirefoxOptions
     from selenium.webdriver.firefox.service import Service as FirefoxService
     from selenium.webdriver.support import expected_conditions as ExpectedConditions
@@ -26,21 +28,34 @@ except ImportError:
     webdriver = None  # type: ignore[assignment]
     WebDriverException = Exception  # type: ignore[assignment, misc]
     TimeoutException = Exception  # type: ignore[assignment, misc]
+    ChromeOptions = None  # type: ignore[assignment, misc]
+    ChromeService = None  # type: ignore[assignment, misc]
     FirefoxOptions = None  # type: ignore[assignment, misc]
     FirefoxService = None  # type: ignore[assignment, misc]
 
+from lib.driver_manager import (
+    resolve_chromedriver_executable,
+    resolve_geckodriver_executable,
+)
+
 
 class IranianWebSMS:
-    """Dispatches SMS verification requests via headless Firefox browser automation.
+    """Dispatches SMS verification requests via headless browser automation.
 
     Parameters
     ----------
     phone_number : str
         Target Iranian phone number.
     driver_executable_path : Path | str | None, optional
-        Path to the geckodriver binary. If None, checks repository root then system PATH.
+        Explicit path to the browser webdriver executable.
     is_headless : bool, optional
-        Whether to run Firefox in headless mode, by default True.
+        Whether to run browser in headless mode, by default True.
+    browser_type : str, optional
+        Browser engine to automate ('chrome' or 'firefox'), by default 'chrome'.
+    proxy_url : str | None, optional
+        Optional proxy URI to route browser traffic through.
+    fast_mode : bool, optional
+        Enable performance optimizations (eager DOM loading, disable images), by default True.
     """
 
     def __init__(
@@ -48,6 +63,9 @@ class IranianWebSMS:
         phone_number: str,
         driver_executable_path: Path | str | None = None,
         is_headless: bool = True,
+        browser_type: str = "chrome",
+        proxy_url: Optional[str] = None,
+        fast_mode: bool = True,
     ) -> None:
         if not SELENIUM_AVAILABLE:
             raise ImportError(
@@ -58,36 +76,113 @@ class IranianWebSMS:
         self.phone_number: str = phone_number
         # Maintain backward-compatible attribute
         self.PhoneNumber: str = phone_number
+        self.browser_type: str = browser_type.lower()
+        self.proxy_url: Optional[str] = proxy_url
+        self.fast_mode: bool = fast_mode
 
-        resolved_driver_path: Path | str | None = driver_executable_path
-        if resolved_driver_path is None:
-            local_geckodriver: Path = (
-                Path(__file__).parent.parent.resolve() / "geckodriver"
+        self.driver: Any = None
+
+        if self.browser_type == "chrome":
+            try:
+                self.driver = self._initialize_chrome_driver(
+                    driver_executable_path=driver_executable_path,
+                    is_headless=is_headless,
+                    proxy_url=proxy_url,
+                    fast_mode=fast_mode,
+                )
+            except Exception as chrome_init_error:
+                # Graceful fallback to Firefox if Chrome fails
+                try:
+                    self.driver = self._initialize_firefox_driver(
+                        driver_executable_path=driver_executable_path,
+                        is_headless=is_headless,
+                        proxy_url=proxy_url,
+                        fast_mode=fast_mode,
+                    )
+                    self.browser_type = "firefox"
+                except Exception:
+                    raise chrome_init_error from None
+        else:
+            self.driver = self._initialize_firefox_driver(
+                driver_executable_path=driver_executable_path,
+                is_headless=is_headless,
+                proxy_url=proxy_url,
+                fast_mode=fast_mode,
             )
-            if local_geckodriver.exists() and local_geckodriver.is_file():
-                resolved_driver_path = local_geckodriver
-            else:
-                system_geckodriver = shutil.which("geckodriver")
-                if system_geckodriver is not None:
-                    resolved_driver_path = system_geckodriver
+
+        self.driver.implicitly_wait(6)
+
+    def _initialize_chrome_driver(
+        self,
+        driver_executable_path: Path | str | None,
+        is_headless: bool,
+        proxy_url: Optional[str],
+        fast_mode: bool,
+    ) -> Any:
+        """Create and configure a Google Chrome WebDriver instance."""
+        chrome_options = ChromeOptions()
+        if is_headless:
+            chrome_options.add_argument("--headless=new")
+
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--log-level=3")
+
+        if fast_mode:
+            chrome_options.page_load_strategy = "eager"
+            chrome_options.add_experimental_option(
+                "prefs",
+                {
+                    "profile.managed_default_content_settings.images": 2,
+                    "profile.default_content_setting_values.notifications": 2,
+                },
+            )
+            chrome_options.add_argument("--blink-settings=imagesEnabled=false")
+
+        if proxy_url:
+            chrome_options.add_argument(f"--proxy-server={proxy_url}")
+
+        service_keyword_arguments: dict[str, Any] = {}
+        resolved_chrome_path = resolve_chromedriver_executable(driver_executable_path)
+        if resolved_chrome_path is not None:
+            service_keyword_arguments["executable_path"] = resolved_chrome_path
+
+        chrome_service = ChromeService(**service_keyword_arguments)
+        return webdriver.Chrome(service=chrome_service, options=chrome_options)
+
+    def _initialize_firefox_driver(
+        self,
+        driver_executable_path: Path | str | None,
+        is_headless: bool,
+        proxy_url: Optional[str],
+        fast_mode: bool,
+    ) -> Any:
+        """Create and configure a Mozilla Firefox WebDriver instance."""
+        resolved_driver_path = resolve_geckodriver_executable(driver_executable_path)
 
         firefox_options = FirefoxOptions()
         if is_headless:
             firefox_options.add_argument("--headless")
 
-        service_kwargs: dict[str, Any] = {}
-        if resolved_driver_path is not None and (
-            (isinstance(resolved_driver_path, Path) and resolved_driver_path.exists())
-            or (isinstance(resolved_driver_path, str) and Path(resolved_driver_path).exists())
-        ):
-            service_kwargs["executable_path"] = str(resolved_driver_path)
+        if fast_mode:
+            firefox_options.page_load_strategy = "eager"
+            firefox_options.set_preference("permissions.default.image", 2)
 
-        firefox_service = FirefoxService(**service_kwargs)
-        self.driver: Any = webdriver.Firefox(
+        if proxy_url:
+            firefox_options.add_argument(f"--proxy-server={proxy_url}")
+
+        service_keyword_arguments: dict[str, Any] = {}
+        if resolved_driver_path is not None:
+            service_keyword_arguments["executable_path"] = resolved_driver_path
+
+        firefox_service = FirefoxService(**service_keyword_arguments)
+        return webdriver.Firefox(
             service=firefox_service,
             options=firefox_options,
         )
-        self.driver.implicitly_wait(7)
 
     def __enter__(self) -> "IranianWebSMS":
         return self
@@ -119,6 +214,7 @@ class IranianWebSMS:
         """Return an ordered list of callable browser SMS provider service method names."""
         excluded_attribute_names: set[str] = {
             "close",
+            "filter_service_methods",
             "get_service_methods",
         }
         return [
@@ -127,6 +223,42 @@ class IranianWebSMS:
             if not method_name.startswith("_")
             and method_name not in excluded_attribute_names
             and callable(getattr(cls, method_name))
+        ]
+
+    @classmethod
+    def filter_service_methods(
+        cls,
+        selected_services: Optional[list[str]] = None,
+    ) -> list[str]:
+        """Return discovered browser service methods matching the optional filter criteria.
+
+        Parameters
+        ----------
+        selected_services : Optional[list[str]], optional
+            Optional list of service names to filter by, by default None.
+
+        Returns
+        -------
+        list[str]
+            Filtered browser service method names.
+        """
+        all_browser_service_names: list[str] = cls.get_service_methods()
+        if not selected_services:
+            return all_browser_service_names
+
+        normalized_filter_targets: set[str] = {
+            target_name.strip().lower().replace("-", "_")
+            for target_name in selected_services
+            if target_name.strip()
+        }
+
+        if not normalized_filter_targets:
+            return all_browser_service_names
+
+        return [
+            service_name
+            for service_name in all_browser_service_names
+            if service_name.lower().replace("-", "_") in normalized_filter_targets
         ]
 
     # ==================== Web Service Provider Methods ==================== #

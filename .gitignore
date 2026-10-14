@@ -11,3 +11,4 @@ geckodriverCompress
 .pytest_cache/
 .coverage
 htmlcov/
+reports/

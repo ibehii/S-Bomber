@@ -1,5 +1,5 @@
 # GitHub: https://github.com/beh185
-# Telegram: https://T.me/BZHNAM
+# Telegram: https://t.me/dr_xz
 # e-mail: Behii@tutanota.com
 # ____________________________________________
 

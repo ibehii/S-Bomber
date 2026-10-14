@@ -1,5 +1,5 @@
 # GitHub: https://github.com/ibehii
-# Telegram: https://T.me/BZHNAM
+# Telegram: https://t.me/dr_xz
 # e-mail: Behii@tutanota.com
 # ____________________________________________
 
@@ -376,7 +376,6 @@ banimode_header: Final[dict[str, str]] = {
   "Accept-Language": "en-US,en;q=0.9",
   "Accept-Encoding": "gzip, deflate, br, zstd",
   "Content-Type": "application/json;charset=utf-8",
-  "Content-Length": "85",
   "Referer": "https://www.banimode.com/",
   "platform": "desktop",
   "Origin": "https://www.banimode.com",
@@ -538,7 +537,6 @@ sibirani_header: Final[dict[str, str]] = {
   "Accept-Language": "en-US,en;q=0.9",
   "Accept-Encoding": "gzip, deflate, br, zstd",
   "Content-Type": "application/json",
-  "Content-Length": "26",
   "Origin": "https://developer.sibirani.com",
   "DNT": "1",
   "Sec-GPC": "1",
@@ -608,7 +606,6 @@ hamrah_mechanic_header: Final[dict[str, str]] = {
   "gpsAdId": "",
   "fcm": "",
   "install_source": "",
-  "Content-Length": "209",
   "Origin": "https://www.hamrah-mechanic.com",
   "DNT": "1",
   "Sec-GPC": "1",
@@ -727,7 +724,6 @@ classino_header: Final[dict[str, str]] = {
   "Accept-Language": "fa-IR",
   "Accept-Encoding": "gzip, deflate, br, zstd",
   "Content-Type": "application/json",
-  "Content-Length": "44",
   "Origin": "https://panel.classino.com",
   "DNT": "1",
   "Sec-GPC": "1",

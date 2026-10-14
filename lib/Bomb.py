@@ -1,12 +1,12 @@
 # Github: https://github.com/ibehii
-# Telegram: https://T.me/BZHNAM
+# Telegram: https://t.me/dr_xz
 # e-mail: Behii@tutanota.com
 # ____________________________________________
 
 """SMS bomb dispatching implementation for Iranian web and mobile services."""
 
 from types import TracebackType
-from typing import Any
+from typing import Any, Optional
 import uuid
 import requests
 from requests import Response
@@ -27,6 +27,8 @@ class IranianSMS:
         Maximum timeout in seconds for outgoing HTTP requests, by default 10.0.
     http_session : requests.Session | None, optional
         Optional shared requests.Session object for HTTP connection pooling.
+    proxy_url : str | None, optional
+        Optional proxy URI to route outgoing requests through.
     """
 
     def __init__(
@@ -34,11 +36,13 @@ class IranianSMS:
         phone_number: str,
         request_timeout: float = DEFAULT_REQUEST_TIMEOUT,
         http_session: requests.Session | None = None,
+        proxy_url: Optional[str] = None,
     ) -> None:
         self.phone_number: str = phone_number
         # Maintain backward-compatible attribute
         self.PhoneNumber: str = phone_number
         self.request_timeout: float = request_timeout
+        self.current_proxy_url: Optional[str] = proxy_url
 
         if http_session is not None:
             self.session: requests.Session = http_session
@@ -46,6 +50,20 @@ class IranianSMS:
         else:
             self.session = requests.Session()
             self._owns_session = True
+
+        if proxy_url:
+            self.set_proxy(proxy_url)
+
+    def set_proxy(self, proxy_url: Optional[str]) -> None:
+        """Update or clear the active proxy configuration for this session."""
+        self.current_proxy_url = proxy_url
+        if proxy_url:
+            self.session.proxies = {
+                "http": proxy_url,
+                "https": proxy_url,
+            }
+        else:
+            self.session.proxies = {}
 
     @property
     def phone_without_leading_zero(self) -> str:
@@ -89,8 +107,10 @@ class IranianSMS:
         """Return an ordered list of callable SMS provider service method names."""
         excluded_attribute_names: set[str] = {
             "close",
+            "filter_service_methods",
             "get_service_methods",
             "phone_without_leading_zero",
+            "set_proxy",
         }
         return [
             method_name
@@ -98,6 +118,42 @@ class IranianSMS:
             if not method_name.startswith("_")
             and method_name not in excluded_attribute_names
             and callable(getattr(cls, method_name))
+        ]
+
+    @classmethod
+    def filter_service_methods(
+        cls,
+        selected_services: Optional[list[str]] = None,
+    ) -> list[str]:
+        """Return discovered service methods matching the optional filter criteria.
+
+        Parameters
+        ----------
+        selected_services : Optional[list[str]], optional
+            Optional list of service name strings to execute, by default None.
+
+        Returns
+        -------
+        list[str]
+            Filtered service method names.
+        """
+        all_service_names: list[str] = cls.get_service_methods()
+        if not selected_services:
+            return all_service_names
+
+        normalized_filter_targets: set[str] = {
+            target_name.strip().lower().replace("-", "_")
+            for target_name in selected_services
+            if target_name.strip()
+        }
+
+        if not normalized_filter_targets:
+            return all_service_names
+
+        return [
+            service_name
+            for service_name in all_service_names
+            if service_name.lower().replace("-", "_") in normalized_filter_targets
         ]
 
     # ==================== Service Provider Methods ==================== #

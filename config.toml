@@ -1,0 +1,49 @@
+# S-Bomber Configuration File
+
+[general]
+telegram = "https://t.me/dr_xz"
+github = "https://github.com/ibehii"
+version = "1.2.0"
+
+[bomber]
+# Primary browser engine for web-dependent services: "chrome" (recommended) or "firefox"
+default_driver = "chrome"
+
+# Whether to execute browser automation services after HTTP services
+use_browser = true
+
+# Request interval delay in seconds between consecutive dispatches
+request_interval = 1.6
+
+# HTTP connection and read timeout in seconds
+request_timeout = 10.0
+
+# Run browser in headless mode (no GUI window displayed)
+is_headless = true
+
+# Optimize browser performance by disabling image rendering and using eager DOM loading
+fast_browser_mode = true
+
+# Path to proxy file containing one proxy per line (ip:port, http://ip:port, socks5://ip:port)
+proxy_file = "proxy.txt"
+
+# Limit execution to specific services, e.g. ["divar", "digikala"]. Leave empty to run all services.
+selected_services = []
+
+# Enable live rich terminal dashboard with interactive progress bar and telemetry
+use_rich_dashboard = true
+
+# Export benchmark telemetry report at the end of execution (true/false)
+export_report = false
+
+# Export format: "json", "csv", or "md"
+export_format = "json"
+
+# Directory where export reports are written
+reports_dir = "reports"
+
+# Total execution rounds / loops to dispatch
+rounds = 1
+
+# Interval delay in seconds between consecutive rounds
+round_interval = 5.0
